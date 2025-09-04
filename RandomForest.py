@@ -1,4 +1,5 @@
 import pickle
+import openpyxl
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
@@ -119,6 +120,65 @@ def printOutcomes(model):
             data.at[index, 'Random Forest'] = team_b
     
     data.to_excel(PREDICTIONS_FILENAME, index=False)
+    
+def formatExcel():
+    # Load the workbook and select the active worksheet
+    wb = openpyxl.load_workbook(PREDICTIONS_FILENAME)
+    ws = wb.active
+    
+    # border around cells A1 to G1
+    border = openpyxl.styles.Border(left=openpyxl.styles.Side(style='thin'), right=openpyxl.styles.Side(style='thin'), top=openpyxl.styles.Side(style='thin'), bottom=openpyxl.styles.Side(style='thin'))
+    for col in range(1, 8):
+        cell = ws.cell(row=1, column=col)
+        cell.border = border
+        cell.alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+        cell.font = openpyxl.styles.Font(bold=True)
+
+    # cell A1 red
+    red_fill = openpyxl.styles.PatternFill(start_color="DA9694", end_color="DA9694", fill_type="solid")
+    ws['A1'].fill = red_fill
+    # cell B1 blue
+    blue_fill = openpyxl.styles.PatternFill(start_color="95B3D7", end_color="95B3D7", fill_type="solid")
+    ws['B1'].fill = blue_fill
+    # cell C1 yellow
+    yellow_fill = openpyxl.styles.PatternFill(start_color="FFFF66", end_color="FFFF66", fill_type="solid")
+    ws['C1'].fill = yellow_fill
+    # cell D1 purple
+    purple_fill = openpyxl.styles.PatternFill(start_color="B1A0C7", end_color="B1A0C7", fill_type="solid")
+    ws['D1'].fill = purple_fill
+    # cell E1 green
+    green_fill = openpyxl.styles.PatternFill(start_color="C4D79B", end_color="C4D79B", fill_type="solid")
+    ws['E1'].fill = green_fill
+    # cell F1 orange
+    orange_fill = openpyxl.styles.PatternFill(start_color="FABF8F", end_color="FABF8F", fill_type="solid")
+    ws['F1'].fill = orange_fill
+    # cell G1 gray
+    gray_fill = openpyxl.styles.PatternFill(start_color="BFBFBF", end_color="BFBFBF", fill_type="solid")
+    ws['G1'].fill = gray_fill
+    
+    # auto adjust column width
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter # Get the column name
+        for cell in col:
+            try: # Necessary to avoid error on empty cells
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width 
+        
+    # right boarder for cells A2 - G(number of rows), bottom border for cells A(number of rows) - G(number of rows) 
+    for row in range(2, ws.max_row + 1):
+        for col in range(1, 8):
+            cell = ws.cell(row=row, column=col)
+            cell.border = openpyxl.styles.Border(right=openpyxl.styles.Side(style='thin'))     
+            if row == ws.max_row:
+                cell.border = openpyxl.styles.Border(bottom=openpyxl.styles.Side(style='thin'), right=openpyxl.styles.Side(style='thin'))       
+            
+    # Save the workbook
+    wb.save(PREDICTIONS_FILENAME)
 
 if __name__ == '__main__':    
     # Create and train the model
@@ -128,3 +188,7 @@ if __name__ == '__main__':
     
     printOutcomes(model)
 
+    # Format the Excel file
+    formatExcel()
+    
+    print("Random Forest Complete")
