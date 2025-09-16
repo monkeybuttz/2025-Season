@@ -10,7 +10,7 @@ from sklearn.ensemble import StackingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 
 # === NFL WEEK NUMBER ===
-NFL_WEEK_TXT_FILE = "C:/Users/greg_yonan/Desktop/Tools/Programs/NFL/2025 Season/Week_Counter.txt"
+NFL_WEEK_TXT_FILE = "Week_Counter.txt"
 with open(NFL_WEEK_TXT_FILE, 'r') as file:
     NFL_WEEK = file.read().strip()
     NFL_WEEK = int(NFL_WEEK.split()[1])

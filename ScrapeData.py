@@ -3,7 +3,7 @@ import openpyxl
 import pandas as pd
 
 # === NFL WEEK NUMBER ===
-NFL_WEEK_TXT_FILE = "C:/Users/greg_yonan/Desktop/Tools/Programs/NFL/2025 Season/Week_Counter.txt"
+NFL_WEEK_TXT_FILE = "Week_Counter.txt"
 with open(NFL_WEEK_TXT_FILE, 'r') as file:
     NFL_WEEK = file.read().strip()
     NFL_WEEK = int(NFL_WEEK.split()[1])
@@ -11,8 +11,8 @@ with open(NFL_WEEK_TXT_FILE, 'r') as file:
     NFL_WEEK_MINUS_1 = f"Week {int(NFL_WEEK.split()[1]) - 1}"
     
 # === CONFIGURATION ===    
-FINAL_SAVE_DIR = "C:/Users/greg_yonan/Desktop/Tools/Programs/NFL/2025 Season/Data/" + NFL_WEEK_MINUS_1 
-PREDICTIONS_DIR = "C:/Users/greg_yonan/Desktop/Tools/Programs/NFL/2025 Season/Predictions/" + NFL_WEEK
+FINAL_SAVE_DIR = "Data/" + NFL_WEEK_MINUS_1 
+PREDICTIONS_DIR = "Predictions/" + NFL_WEEK
 
 # === USE PANDAS TO SCRAPE DATA ===
 def scrape_data():
@@ -73,7 +73,6 @@ def get_upcoming_games():
 
     # save workbook
     wb.save(predictions)
-    print("Predictions Saved\n")
     
 # === MAIN FUNCTION ===
 if __name__ == "__main__":
