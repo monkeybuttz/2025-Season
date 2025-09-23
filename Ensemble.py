@@ -1,6 +1,7 @@
 import pickle
 import openpyxl
 import pandas as pd
+import os
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.neural_network import MLPRegressor
@@ -116,6 +117,7 @@ def Train():
     print(f'R^2 Score: {r2}') 
     
     # Save the model to disk
+    os.makedirs('Models/' + NFL_WEEK, exist_ok=True)
     MODEL_FILENAME = 'Models/' + NFL_WEEK + '/stacking_model.sav'
     pickle.dump(model, open(MODEL_FILENAME, 'wb'))
     print('Model saved to disk')

@@ -1,9 +1,10 @@
 import pickle
 import openpyxl
 import pandas as pd
+import os
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
-from xgboost import XGBRegressor  # Import XGBRegressor for regression tasks
+from xgboost import XGBRegressor  
 
 # === NFL WEEK NUMBER ===
 NFL_WEEK_TXT_FILE = "Week_Counter.txt"
@@ -97,6 +98,7 @@ def Train():
     print(f'R^2 Score: {r2}')
     
     # Save the model to disk
+    os.makedirs('Models/' + NFL_WEEK, exist_ok=True)
     MODEL_FILENAME = 'Models/' + NFL_WEEK + '/gbm.sav'
     pickle.dump(model, open(MODEL_FILENAME, 'wb'))
     print('Model saved to disk')

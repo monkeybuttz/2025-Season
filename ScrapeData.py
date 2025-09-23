@@ -53,6 +53,7 @@ def get_upcoming_games():
     GAMES = GAMES.reset_index(drop=True)
     
     # create an excel workbook with away team in column A and home team in column B, give headers 
+    os.makedirs(PREDICTIONS_DIR, exist_ok=True)
     predictions = os.path.join(PREDICTIONS_DIR, f"{NFL_WEEK}.xlsx")
     wb = openpyxl.Workbook()
     ws = wb.active
