@@ -37,6 +37,7 @@ def scrape_data():
     NFL['Tm'] = NFL['Tm'].str.replace('+', '', regex=False)
     
     # Save the data to a CSV file to the final save directory
+    os.makedirs(FINAL_SAVE_DIR, exist_ok=True)
     NFL.to_csv(os.path.join(FINAL_SAVE_DIR, "NFL_2025.csv"), index=False)
     print("\nData scraped and saved to NFL_2025.csv\n")
     
