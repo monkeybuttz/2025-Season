@@ -1,5 +1,3 @@
-<!-- Outline of NFL ML Project -->
-
 # NFL Machine Learning Project
 
 This project aims to predict the outcomes of NFL games using machine learning techniques. The project utilizes historical data, feature engineering, and various machine learning models to forecast game results.
@@ -9,6 +7,7 @@ This project aims to predict the outcomes of NFL games using machine learning te
 - `Data/`: Contains historical NFL data used for training and testing the models.
 - `Predictions/`: Stores the predictions made by the models for upcoming games.
 - `Models/`: Contains the trained machine learning models.
+- `Main.py`: The main script that orchestrates the data processing, model training, and prediction generation.
 - `Ensemble.py`: Implements an ensemble learning approach to improve prediction accuracy.
 - `GBM.py`: Implements a Gradient Boosting Machine model for predicting game outcomes.
 - `Regression.py`: Implements regression models for predicting scores.
@@ -28,8 +27,11 @@ This project aims to predict the outcomes of NFL games using machine learning te
    pip install -r requirements.txt
    ```
 
-3. Fix any file paths in the scripts if necessary to match your local setup.
-4. On Windows, go to task scheduler and create a new task to run `Increment_Counter.py` from the command line every Tuesday (end of the NFL Week), this will update `Week_Counter.txt`
-5. On Windows, go to task scheduler and create a new task to run `ScrapeData.py` from the command line every after Week_Counter.txt has been updated, this will update the data in the `Data/` folder
-6. On Windows, go to task scheduler and create a new task to run `Ensemble.py`, `GBM.py`, `Regression.py`, and `RandomForest.py` from the command line every Thursday (before the NFL Week starts), this will generate predictions for the upcoming week and save them in the `Predictions/` folder as well as save the models in the `Models/` folder.
-7. Review the predictions in the `Predictions/` folder
+3. cd into the project directory and run the script to start the prediction process by executing:
+
+   ```bash
+   cd <path/to/project>
+   python Main.py
+   ```
+
+   where `<path/to/project>` is the path to the directory where this README file is located.

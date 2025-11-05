@@ -3,20 +3,7 @@ import openpyxl
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
-
-# === NFL WEEK NUMBER ===
-NFL_WEEK_TXT_FILE = "Week_Counter.txt"
-with open(NFL_WEEK_TXT_FILE, 'r') as file:
-    NFL_WEEK = file.read().strip()
-    NFL_WEEK = int(NFL_WEEK.split()[1])
-    NFL_WEEK = f"Week {NFL_WEEK}"
-    NFL_WEEK_MINUS_1 = f"Week {int(NFL_WEEK.split()[1]) - 1}"
-
-# File paths
-DATA_FILENAME = "Data/" + NFL_WEEK_MINUS_1 + "/NFL_2025.csv"
-PREDICTIONS_FILENAME = "Predictions/" + NFL_WEEK + '/' +  NFL_WEEK + ".xlsx"
 
 # Below are column indicies
 TEAM = 0 # Team Name
@@ -36,7 +23,7 @@ DEFENSIVE_SRS = 11 # Defensive SRS
 NFL_TEAMS = ['Arizona Cardinals', 'Atlanta Falcons', 'Baltimore Ravens', 'Buffalo Bills', 'Carolina Panthers', 'Chicago Bears', 'Cincinnati Bengals', 'Cleveland Browns', 'Dallas Cowboys', 'Denver Broncos', 'Detroit Lions', 'Green Bay Packers', 'Houston Texans', 'Indianapolis Colts', 'Jacksonville Jaguars', 'Kansas City Chiefs', 'Las Vegas Raiders', 'Los Angeles Chargers', 'Los Angeles Rams', 'Miami Dolphins', 'Minnesota Vikings', 'New England Patriots', 'New Orleans Saints', 'New York Giants', 'New York Jets', 'Philadelphia Eagles', 'Pittsburgh Steelers', 'San Francisco 49ers', 'Seattle Seahawks', 'Tampa Bay Buccaneers', 'Tennessee Titans', 'Washington Football Team']
 
 # Get team data     
-def getTeamData(team_name):
+def getTeamData(team_name, DATA_FILENAME):
     team_data = []
     with open(DATA_FILENAME, "r") as data_file:
         data = pd.read_csv(data_file)
@@ -49,10 +36,10 @@ def getTeamData(team_name):
     return team_data 
 
 # Train the model and save it to a file
-def Train():
+def Train(NFL_WEEK, DATA_FILENAME):
     NFL_team_data = []
     for team in NFL_TEAMS:
-        team_data = getTeamData(team)
+        team_data = getTeamData(team, DATA_FILENAME)
         if team_data is not None and not team_data.empty:  # Ensure team_data is not None or empty
             NFL_team_data.append(team_data)
     
@@ -87,21 +74,13 @@ def Train():
     model = RandomForestRegressor(n_estimators=100, random_state=42)  # Use RandomForestRegressor
     model.fit(X_train, y_train)
     
-    # Evaluate the model
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
-    print(f'Mean Squared Error: {mse}')
-    print(f'R^2 Score: {r2}')
-    
     # Save the model to disk
     os.makedirs('Models/' + NFL_WEEK, exist_ok=True)
     filename = 'Models/' + NFL_WEEK + '/random_forest.sav'
     pickle.dump(model, open(filename, 'wb'))
-    print('Model saved to disk')
 
 # Given a list of NFL games on an xlsx, predict the outcome of each game
-def printOutcomes(model):
+def printOutcomes(model, PREDICTIONS_FILENAME, DATA_FILENAME):
     # Read the Excel file    
     data = pd.read_excel(PREDICTIONS_FILENAME)
     data['Random Forest'] = data['Random Forest'].astype(str)
@@ -109,8 +88,8 @@ def printOutcomes(model):
     for index, row in data.iterrows():
         team_a = row['Away Team']
         team_b = row['Home Team']
-        team_a_data = getTeamData(team_a)
-        team_b_data = getTeamData(team_b)
+        team_a_data = getTeamData(team_a, DATA_FILENAME)
+        team_b_data = getTeamData(team_b, DATA_FILENAME)
         team_a_features = pd.DataFrame([team_a_data[['W', 'L', 'PF', 'PA', 'PD', 'MoV', 'SoS', 'SRS', 'OSRS', 'DSRS']].mean().values], columns=['W', 'L', 'PF', 'PA', 'PD', 'MoV', 'SoS', 'SRS', 'OSRS', 'DSRS'])
         team_b_features = pd.DataFrame([team_b_data[['W', 'L', 'PF', 'PA', 'PD', 'MoV', 'SoS', 'SRS', 'OSRS', 'DSRS']].mean().values], columns=['W', 'L', 'PF', 'PA', 'PD', 'MoV', 'SoS', 'SRS', 'OSRS', 'DSRS'])
         team_a_win_prob = model.predict(team_a_features)[0]
@@ -123,7 +102,7 @@ def printOutcomes(model):
     
     data.to_excel(PREDICTIONS_FILENAME, index=False)
     
-def formatExcel():
+def formatExcel(PREDICTIONS_FILENAME):
     # Load the workbook and select the active worksheet
     wb = openpyxl.load_workbook(PREDICTIONS_FILENAME)
     ws = wb.active
@@ -182,15 +161,20 @@ def formatExcel():
     # Save the workbook
     wb.save(PREDICTIONS_FILENAME)
 
-if __name__ == '__main__':    
-    # Create and train the model
-    Train()
+def main(NFL_WEEK, NFL_WEEK_MINUS_1):    
+    
+    # File paths
+    DATA_FILENAME = "Data/" + NFL_WEEK_MINUS_1 + "/NFL_2025.csv"
+    PREDICTIONS_FILENAME = "Predictions/" + NFL_WEEK + '/' +  NFL_WEEK + ".xlsx"
+    
+    # create and train the model
+    Train(NFL_WEEK, DATA_FILENAME)  
+    
     # Use model (Models\random_forest.sav) to predict the outcome of the game
     model = pickle.load(open('Models/' + NFL_WEEK + '/random_forest.sav', 'rb'))
     
-    printOutcomes(model)
-
-    # Format the Excel file
-    formatExcel()
+    # Predict outcomes
+    printOutcomes(model, PREDICTIONS_FILENAME, DATA_FILENAME)
     
-    print("Random Forest Complete")
+    # Format the Excel file
+    formatExcel(PREDICTIONS_FILENAME)

@@ -2,20 +2,8 @@ import os
 import openpyxl
 import pandas as pd
 
-# === NFL WEEK NUMBER ===
-NFL_WEEK_TXT_FILE = "Week_Counter.txt"
-with open(NFL_WEEK_TXT_FILE, 'r') as file:
-    NFL_WEEK = file.read().strip()
-    NFL_WEEK = int(NFL_WEEK.split()[1])
-    NFL_WEEK = f"Week {NFL_WEEK}"
-    NFL_WEEK_MINUS_1 = f"Week {int(NFL_WEEK.split()[1]) - 1}"
-    
-# === CONFIGURATION ===    
-FINAL_SAVE_DIR = "Data/" + NFL_WEEK_MINUS_1 
-PREDICTIONS_DIR = "Predictions/" + NFL_WEEK
-
 # === USE PANDAS TO SCRAPE DATA ===
-def scrape_data():
+def scrape_data(FINAL_SAVE_DIR):
     # URL to scrape data from
     URL_DATA = "https://www.pro-football-reference.com/years/2025/"                                             
 
@@ -39,9 +27,9 @@ def scrape_data():
     # Save the data to a CSV file to the final save directory
     os.makedirs(FINAL_SAVE_DIR, exist_ok=True)
     NFL.to_csv(os.path.join(FINAL_SAVE_DIR, "NFL_2025.csv"), index=False)
-    print("\nData scraped and saved to NFL_2025.csv\n")
-    
-def get_upcoming_games():
+
+# === GET UPCOMING GAMES AND CREATE EXCEL FILE ===   
+def get_upcoming_games(NFL_WEEK, PREDICTIONS_DIR):
     # URL to get weeklt matchups
     URL_GAMES = "https://www.pro-football-reference.com/years/2025/games.htm"
     
@@ -77,13 +65,11 @@ def get_upcoming_games():
     wb.save(predictions)
     
 # === MAIN FUNCTION ===
-if __name__ == "__main__":
+def main(NFL_WEEK, NFL_WEEK_MINUS_1):
+    # === CONFIGURATION ===    
+    FINAL_SAVE_DIR = "Data/" + NFL_WEEK_MINUS_1 
+    PREDICTIONS_DIR = "Predictions/" + NFL_WEEK
     # Call the scrape_data function
-    scrape_data()
+    scrape_data(FINAL_SAVE_DIR)
     # Call the get_upcoming_games function
-    get_upcoming_games()
-    # print a message to the user
-    print("Exiting...")
-    # Close the script
-    os._exit(0)
-# === END OF SCRIPT ===
+    get_upcoming_games(NFL_WEEK, PREDICTIONS_DIR)
